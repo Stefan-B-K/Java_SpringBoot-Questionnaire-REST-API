@@ -4,20 +4,14 @@ package com.istef.demo5questionnairerestapi.controllers;
 import com.istef.demo5questionnairerestapi.json.Question;
 import com.istef.demo5questionnairerestapi.json.Survey;
 import com.istef.demo5questionnairerestapi.services.SurveyService;
-import com.sun.net.httpserver.Headers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.function.ServerRequest;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.http.ResponseEntity.*;
 
 @RestController
 @RequestMapping("surveys")

@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 public class SurveyService {
 
-    private static List<Survey> surveys = new ArrayList<>();
+    private static final List<Survey> surveys = new ArrayList<>();
     private static Integer count = 0;
     static {
         Question question1 = new Question(++count,
