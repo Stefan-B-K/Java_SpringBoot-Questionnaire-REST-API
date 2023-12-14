@@ -2,6 +2,7 @@ package com.istef.demo5questionnairerestapi.json;
 
 import java.util.List;
 
+
 public class Question {
 
     private Integer id;

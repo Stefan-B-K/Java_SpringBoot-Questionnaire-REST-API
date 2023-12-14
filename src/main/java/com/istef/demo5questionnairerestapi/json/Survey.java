@@ -2,10 +2,15 @@ package com.istef.demo5questionnairerestapi.json;
 
 import java.util.List;
 
+
 public class Survey {
+
+
     private Integer id;
+
     private String title;
     private String description;
+
     private List<Question> questions;
 
     public Survey(Integer id, String title, String description, List<Question> questions) {
@@ -14,6 +19,7 @@ public class Survey {
         this.description = description;
         this.questions = questions;
     }
+
 
     public Integer getId() {
         return id;

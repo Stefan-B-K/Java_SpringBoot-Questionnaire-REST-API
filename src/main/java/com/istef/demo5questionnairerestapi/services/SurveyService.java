@@ -77,4 +77,12 @@ public class SurveyService {
         }
         return Optional.of(questionId);
     }
+
+    public boolean updateQuestionFromSurvey(int surveyId, int questionId, Question question) {
+        Optional<List<Question>> questions = listQuestionsInSurvey(surveyId);
+        if (questions.isEmpty()) return false;
+        questions.get().removeIf(q -> q.getId().equals(questionId));
+        questions.get().add(question);
+        return true;
+    }
 }

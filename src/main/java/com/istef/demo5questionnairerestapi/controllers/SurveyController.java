@@ -61,4 +61,12 @@ public class SurveyController {
                 .map(integer -> new ResponseEntity<>(integer, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(0, HttpStatus.NOT_FOUND));
     }
+
+    @PutMapping("/{surveyId}/questions/{questionId}")
+    public ResponseEntity<Integer> deleteQuestionFromSurvey(@PathVariable int surveyId,
+                                                            @PathVariable int questionId,
+                                                            @RequestBody Question question) {
+       boolean updated =  service.updateQuestionFromSurvey(surveyId, questionId, question);
+       return new ResponseEntity<>(updated ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
+    }
 }
