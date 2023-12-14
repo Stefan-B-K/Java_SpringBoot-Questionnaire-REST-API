@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -50,9 +49,16 @@ public class SurveyController {
     @PostMapping("/{id}/questions")
     public ResponseEntity<Integer> addQuestionToSurvey(@PathVariable int id,
                                                        @RequestBody Question question) {
-        Optional<Integer> newId = service.addQuestionToSurvey(id, question);
-        return newId.map(integer -> new ResponseEntity<>(integer, HttpStatus.CREATED))
+        return service.addQuestionToSurvey(id, question)
+                .map(integer -> new ResponseEntity<>(integer, HttpStatus.CREATED))
                 .orElseGet(() -> new ResponseEntity<>(0, HttpStatus.NOT_FOUND));
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/{surveyId}/questions/{questionId}")
+    public ResponseEntity<Integer> deleteQuestionFromSurvey(@PathVariable int surveyId,
+                                                            @PathVariable int questionId) {
+        return service.deleteQuestionFromSurvey(surveyId, questionId)
+                .map(integer -> new ResponseEntity<>(integer, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(0, HttpStatus.NOT_FOUND));
     }
 }

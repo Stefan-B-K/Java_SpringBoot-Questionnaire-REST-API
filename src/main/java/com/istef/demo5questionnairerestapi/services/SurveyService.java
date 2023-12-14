@@ -15,6 +15,7 @@ public class SurveyService {
 
     private static final List<Survey> surveys = new ArrayList<>();
     private static Integer count = 0;
+
     static {
         Question question1 = new Question(++count,
                 "Most Popular Cloud Platform Today", Arrays.asList(
@@ -66,5 +67,14 @@ public class SurveyService {
         question.setId(++count);
         questions.get().add(question);
         return Optional.of(count);
+    }
+
+    public Optional<Integer> deleteQuestionFromSurvey(int surveyId, int questionId) {
+        Optional<List<Question>> questions = listQuestionsInSurvey(surveyId);
+        if (questions.isEmpty() || questions.get().isEmpty()
+                || !questions.get().removeIf(s -> s.getId().equals(questionId))) {
+            return Optional.empty();
+        }
+        return Optional.of(questionId);
     }
 }
