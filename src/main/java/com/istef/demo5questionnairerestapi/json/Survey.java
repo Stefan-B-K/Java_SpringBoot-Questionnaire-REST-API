@@ -52,4 +52,14 @@ public class Survey {
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
     }
+
+    @Override
+    public String toString() {
+        return "Survey{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", questions=" + questions +
+                '}';
+    }
 }

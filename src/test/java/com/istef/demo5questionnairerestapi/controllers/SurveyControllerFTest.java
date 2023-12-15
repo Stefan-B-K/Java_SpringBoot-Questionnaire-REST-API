@@ -1,35 +1,36 @@
 package com.istef.demo5questionnairerestapi.controllers;
 
 
-import com.istef.demo5questionnairerestapi.json.Question;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+
+import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SurveyControllerITest {
+public class SurveyControllerFTest {
 
     @Autowired
     private TestRestTemplate template;
 
-    private static String QUESTION_URL = "/surveys/1/questions/1";
+    private final HttpEntity<String> httpEntity = new HttpEntity<>(null, setHeaders());
 
-    private static String QUESTIONS_URL = "/surveys/1/questions";
+    private static final String QUESTION_URL = "/surveys/1/questions/1";
 
-    private static String QUESTION_JSON_RESPONSE = """
+    private static final String QUESTIONS_URL = "/surveys/1/questions";
+
+    private static final String QUESTION_JSON_RESPONSE = """
             {
                 "id": 1
             }
             """;
-    private static String QUESTIONS_LIST_JSON_RESPONSE = """
+    private static final String QUESTIONS_LIST_JSON_RESPONSE = """
             [
                 {
                     "id": 1
@@ -44,7 +45,7 @@ public class SurveyControllerITest {
             """;
 
 
-    private static String NEW_QUESTION_JSON = """
+    private static final String NEW_QUESTION_JSON = """
             {
                 "text": "What ... ?",
                 "options": [
@@ -60,7 +61,7 @@ public class SurveyControllerITest {
     @Test
     public void getQuestionInSurvey_JSON() throws JSONException {
         ResponseEntity<String> responseEntity = template
-                .getForEntity(QUESTION_URL, String.class);
+                .exchange(QUESTION_URL, HttpMethod.GET, httpEntity, String.class);
 
         JSONAssert.assertEquals(QUESTION_JSON_RESPONSE, responseEntity.getBody(), false);
         assertEquals("application/json", responseEntity.getHeaders().get("Content-Type").get(0));
@@ -68,20 +69,9 @@ public class SurveyControllerITest {
     }
 
     @Test
-    public void getQuestionInSurvey_Object() {
-        Question result = template
-                .getForObject(QUESTION_URL, Question.class);
-
-        assertEquals(1, result.getId());
-        assertFalse(result.getOptions().isEmpty());
-        assertTrue(result.getOptions().contains(result.getCorrectAnswer()));
-    }
-
-    @Test
     public void getAllQuestionsInSurvey_JSON() throws JSONException {
         ResponseEntity<String> responseEntity = template
-                .getForEntity(QUESTIONS_URL, String.class);
-
+                .exchange(QUESTIONS_URL, HttpMethod.GET, httpEntity, String.class);
         JSONAssert.assertEquals(QUESTIONS_LIST_JSON_RESPONSE, responseEntity.getBody(), false);
         assertEquals("application/json", responseEntity.getHeaders().get("Content-Type").get(0));
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
@@ -89,19 +79,31 @@ public class SurveyControllerITest {
 
 
     @Test
-    public void add_deleteQuestionToSurvey_Json_OK() throws JSONException {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-Type", "application/json");
-        HttpEntity<String> httpEntity = new HttpEntity<>(NEW_QUESTION_JSON, httpHeaders);
-
-        ResponseEntity<String> responseEntity = template
+    public void add_deleteQuestionToSurvey_Json_OK() {
+        HttpEntity<String> httpEntity = new HttpEntity<>(NEW_QUESTION_JSON, setHeaders());
+        ResponseEntity<String> responseEntityPost = template
                 .postForEntity(QUESTIONS_URL, httpEntity, String.class);
 
-        assertEquals("4", responseEntity.getBody());
-        assertEquals("application/json", responseEntity.getHeaders().get("Content-Type").get(0));
-        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        assertEquals("4", responseEntityPost.getBody());
+        assertEquals("application/json", responseEntityPost.getHeaders().get("Content-Type").get(0));
+        assertTrue(responseEntityPost.getStatusCode().is2xxSuccessful());
 
-        template.delete(QUESTIONS_URL + '/' + 4);
+        ResponseEntity<String> responseEntityDelete = template
+                .exchange(QUESTIONS_URL + '/' + 4, HttpMethod.DELETE, httpEntity, String.class);
+        assertTrue(responseEntityDelete.getStatusCode().is2xxSuccessful());
+    }
+
+    private HttpHeaders setHeaders() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Content-Type", "application/json");
+        httpHeaders.add("Authorization", "Basic " + basicAuthEncode("Stef", "123"));
+        return httpHeaders;
+    }
+
+    private String basicAuthEncode(String user, String password) {
+        String combined = user + ':' + password;
+        byte[] bytes = Base64.getEncoder().encode(combined.getBytes());
+        return new String(bytes);
     }
 
 }

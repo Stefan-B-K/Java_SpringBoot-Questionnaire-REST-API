@@ -49,4 +49,13 @@ public class Question {
         this.correctAnswer = correctAnswer;
     }
 
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", text='" + text + '\'' +
+                ", options=" + options +
+                ", correctAnswer='" + correctAnswer + '\'' +
+                '}';
+    }
 }
