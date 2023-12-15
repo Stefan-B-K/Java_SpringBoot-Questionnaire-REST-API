@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -34,9 +35,10 @@ public class SurveyController {
     }
 
     @GetMapping("/{id}/questions")
-    public List<Question> getAllQuestionsInSurvey(@PathVariable int id) {
+    public ResponseEntity<List<Question>> getAllQuestionsInSurvey(@PathVariable int id) {
         return service.listQuestionsInSurvey(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .map(list -> new ResponseEntity<>(list, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(Collections.emptyList(), HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{surveyId}/questions/{questionId}")
